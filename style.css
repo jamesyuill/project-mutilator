@@ -1,0 +1,15 @@
+body {
+  padding: 1rem;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ogsample {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
