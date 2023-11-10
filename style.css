@@ -1,5 +1,6 @@
 body {
   padding: 1rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 main {
@@ -12,4 +13,26 @@ main {
   display: flex;
   flex-direction: row;
   gap: 1rem;
+}
+
+.fxrack {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.fxbox {
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 1rem;
+}
+
+.active {
+  border: 2px solid green;
+
+  background-color: aqua;
+}
+
+.slider {
 }
