@@ -1,14 +1,12 @@
 import * as Tone from 'tone';
 
 let player;
+let buttonClicked = 0;
 
 //DOM QUERIES --------------------------------|
 const userOGAudio = document.getElementById('userOGAudio');
-const ogSampleDiv = document.getElementById('ogsample');
-const bypassDistortion = document.querySelector('#dist-bypass');
-const bypassChorus = document.querySelector('#chorus-bypass');
-const bypassCrusher = document.querySelector('#crush-bypass');
-const dryWetDistSlider = document.getElementById('dry-wet-dist-slider');
+const newSampleDiv = document.getElementById('newSample');
+const mutilateBtn = document.getElementById('mutilate');
 
 const distortion = new Tone.Distortion({
   wet: 1,
@@ -19,38 +17,39 @@ const chorus = new Tone.Chorus({
   delayTime: 100,
   depth: 100,
 });
-const crusher = new Tone.BitCrusher({
-  wet: 1,
-  depth: 2,
+
+const cheby = new Tone.Chebyshev(80);
+
+const multiband = new Tone.MultibandCompressor({
+  lowFrequency: 200,
+  highFrequency: 1300,
+  low: {
+    threshold: -12,
+  },
 });
+const limiter = new Tone.Limiter(-20);
 
 userOGAudio.addEventListener('change', (event) => {
   Tone.start();
   const fileURL = URL.createObjectURL(event.target.files[0]);
   player = new Tone.Player(fileURL);
-  createButtons();
-  // createCheckboxMenu();
-  addFX();
+  player.toDestination();
 });
 
-bypassDistortion.addEventListener('change', bypassEffect.bind(distortion));
-bypassChorus.addEventListener('change', bypassEffect.bind(chorus));
-bypassCrusher.addEventListener('change', bypassEffect.bind(crusher));
-dryWetDistSlider.addEventListener('input', (e) => {
-  let value = e.target.value / 100;
-  distortion.wet.value = value;
-});
-
-function bypassEffect(e) {
-  if (e.target.checked) {
-    this.wet.value = 0;
-  } else {
-    this.wet.value = 1;
-  }
-}
+mutilateBtn.addEventListener('click', randomiseValues);
 
 //FUNCTIONS --------------------------------|
 
+function randomiseValues() {
+  distortion.wet.value = Math.random();
+  chorus.wet.value = Math.random();
+  chorus.delayTime = Math.floor(Math.random() * 100);
+  chorus.depth = Math.floor(Math.random() * 100);
+  cheby.order = Math.floor(Math.random() * 100);
+
+  addFX();
+}
+createButtons();
 function createButtons() {
   const playSample = document.createElement('button');
   playSample.innerText = 'Play Sample';
@@ -70,10 +69,10 @@ function createButtons() {
   loopSample.id = 'loopsample';
   loopSample.type = 'checkbox';
 
-  ogSampleDiv.appendChild(playSample);
-  ogSampleDiv.appendChild(stopSample);
-  ogSampleDiv.appendChild(loopLabel);
-  ogSampleDiv.appendChild(loopSample);
+  newSampleDiv.appendChild(playSample);
+  newSampleDiv.appendChild(stopSample);
+  newSampleDiv.appendChild(loopLabel);
+  newSampleDiv.appendChild(loopSample);
 
   loopSample.addEventListener('change', (e) => {
     if (e.target.checked) {
@@ -84,23 +83,13 @@ function createButtons() {
   });
 }
 
-// function createCheckboxMenu() {
-//   const distLabel = document.createElement('label');
-//   distLabel.htmlFor = 'distbox';
-//   distLabel.innerText = 'Distortion';
-//   const distBox = document.createElement('input');
-//   distBox.type = 'checkbox';
-//   distBox.id = 'distbox';
-
-//   documentFragment.appendChild(listItem);
-//   listItem.appendChild(distLabel);
-//   listItem.appendChild(distBox);
-//   // listItem.appendChild(editButton);
-//   // listItem.appendChild(deleteButton);
-//   checkBoxDiv.appendChild(documentFragment);
-// }
-
 function addFX() {
-  Tone.Destination.chain(distortion, chorus, crusher);
-  player.toDestination();
+  Tone.Destination.chain(
+    distortion,
+    chorus,
+
+    cheby,
+    multiband,
+    limiter
+  );
 }

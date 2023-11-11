@@ -4,45 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
-    <title>Document</title>
+    <title>Yuill's Mutilator</title>
   </head>
   <body>
     <main>
-      <input type="file" id="userOGAudio" />
-      <div id="ogsample" class="ogsample"></div>
-      <div id="fxrack" class="fxrack">
-        <div id="distortion" class="fxbox">
-          <h3>distortion</h3>
-
-          <div>
-            <label for="dist-bypass">bypass</label>
-            <input type="checkbox" id="dist-bypass" />
-          </div>
-
-          <div>
-            <label for="dry-wet-dist-slider">dry/wet</label>
-            <input
-              type="range"
-              min="1"
-              max="100"
-              value="50"
-              orient="vertical"
-              class="dry-wet-dist-slider slider"
-              id="dry-wet-dist-slider"
-            />
-          </div>
-        </div>
-        <div id="chorus" class="fxbox">
-          <h3>chorus</h3>
-          <label for="chorus-bypass">bypass</label>
-          <input type="checkbox" id="chorus-bypass" />
-        </div>
-        <div id="crusher" class="fxbox">
-          <h3>crusher</h3>
-          <label for="crush-bypass">bypass</label>
-          <input type="checkbox" id="crush-bypass" />
-        </div>
+      <div class="userOGAudio">
+        <input type="file" id="userOGAudio" class="file-input" />
       </div>
+
+      <button class="mutilate" id="mutilate">MUTILATE</button>
+      <div id="newSample" class="newSample"></div>
     </main>
     <script type="module" src="main.js"></script>
   </body>
