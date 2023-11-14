@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Visualizer</title>
+    <style>
+      canvas {
+        display: block;
+        margin: auto;
+        background-color: #282c34;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="visualizer"></canvas>
+
+    <script>
+      // Get the canvas element and its 2d context
+      const canvas = document.getElementById('visualizer');
+      const ctx = canvas.getContext('2d');
+
+      // Set the canvas size
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // Create an audio context
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+
+      // Create an analyser node
+      const analyser = audioContext.createAnalyser();
+
+      // Connect the analyser to the audio context's destination (speakers)
+      analyser.connect(audioContext.destination);
+
+      // Create a media element source node
+      const audioElement = new Audio('beat.wav');
+      const source = audioContext.createMediaElementSource(audioElement);
+
+      // Connect the source to the analyser
+      source.connect(analyser);
+
+      // Connect the source to the audio context's destination (speakers)
+      source.connect(audioContext.destination);
+
+      // Set the FFT size (the number of data points used for the FFT)
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      // Function to draw the visualizer
+      function draw() {
+        analyser.getByteFrequencyData(dataArray);
+
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the visualizer bars
+        const barWidth = (canvas.width / bufferLength) * 2.5;
+        let barHeight;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          barHeight = dataArray[i];
+
+          ctx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
+          ctx.fillRect(
+            x,
+            canvas.height - barHeight / 2,
+            barWidth,
+            barHeight / 2
+          );
+
+          x += barWidth + 1;
+        }
+
+        // Request the next frame
+        requestAnimationFrame(draw);
+      }
+
+      // Start playing the audio and drawing the visualizer
+      audioElement.play();
+      draw();
+    </script>
+  </body>
+</html>
